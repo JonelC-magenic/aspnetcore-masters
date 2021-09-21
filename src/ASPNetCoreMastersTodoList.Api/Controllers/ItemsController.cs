@@ -12,12 +12,15 @@ namespace ASPNetCoreMastersTodoList.Api.Controllers
             return new ItemService().Get(id);
         }
 
-        public void Post(ItemCreateBindingModel itemCreateBindingModel)
+        public void Post([FromBody]ItemCreateBindingModel itemCreateBindingModel)
         {
-            new ItemService().Save(new ItemDTO
+            if (ModelState.IsValid)
             {
-                Text = itemCreateBindingModel.Text
-            });
+                new ItemService().Save(new ItemDTO
+                {
+                    Text = itemCreateBindingModel.Text
+                });
+            }
         }
     }
 }
