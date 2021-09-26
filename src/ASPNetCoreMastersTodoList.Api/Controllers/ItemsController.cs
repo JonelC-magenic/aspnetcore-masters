@@ -10,21 +10,36 @@ namespace ASPNetCoreMastersTodoList.Api.Controllers
     [Route("[controller]")]
     public class ItemsController : ControllerBase
     {
-        [HttpGet]
-        public IActionResult GetAll()
+        private readonly IItemService _itemService;
+
+        public ItemsController(IItemService itemService)
         {
-            return Ok(new ItemService().GetAll(1));
+            _itemService = itemService ?? throw new System.ArgumentNullException(nameof(itemService));
+        }
+
+        [HttpGet]
+        public IActionResult GetAll([FromQuery] Dictionary<string, string> filters)
+        {
+            if (!(filters is null)) // change to filters is not null when upgraded to c# 9 or greater
+            {
+                return GetByFilters(filters);
+            }
+
+            return Ok(_itemService.GetAll());
         }
 
         [HttpGet("{id}")]
         public IActionResult Get(int id)
         {
-            return Ok(new ItemService().Get(id));
+
+            return Ok(_itemService.Get(id));
         }
 
         public IActionResult GetByFilters([FromQuery]Dictionary<string, string> filters)
         {
-            return Ok(new ItemService().Get(1));
+            var filterDto = new ItemByFilterDTO(filters);
+
+            return Ok(_itemService.GetAllByFilter(filterDto));
         }
 
         [HttpPost]
@@ -32,7 +47,7 @@ namespace ASPNetCoreMastersTodoList.Api.Controllers
         {
             if (ModelState.IsValid)
             {
-                new ItemService().Save(new ItemDTO
+                _itemService.AddItem(new ItemDTO
                 {
                     Text = itemCreateBindingModel.Text
                 });
@@ -46,7 +61,7 @@ namespace ASPNetCoreMastersTodoList.Api.Controllers
         {
             if (ModelState.IsValid)
             {
-                new ItemService().Save(new ItemDTO
+                _itemService.Update(new ItemDTO
                 {
                     Text = itemUpdateBindingModel.Text
                 });
@@ -57,7 +72,8 @@ namespace ASPNetCoreMastersTodoList.Api.Controllers
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)
         {
-            return Ok(new ItemService().Get(id));
+            _itemService.Delete(id);
+            return Ok();
         }
     }
 }
