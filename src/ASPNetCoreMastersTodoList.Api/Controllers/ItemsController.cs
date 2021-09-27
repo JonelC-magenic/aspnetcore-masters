@@ -1,8 +1,10 @@
-﻿using ASPNetCoreMastersTodoList.Api.BindingModels;
+﻿using ASPNetCoreMastersTodoList.Api.ApiModels;
+using ASPNetCoreMastersTodoList.Api.BindingModels;
 using Microsoft.AspNetCore.Mvc;
 using Services;
 using Services.DTO;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace ASPNetCoreMastersTodoList.Api.Controllers
 {
@@ -10,21 +12,33 @@ namespace ASPNetCoreMastersTodoList.Api.Controllers
     [Route("[controller]")]
     public class ItemsController : ControllerBase
     {
+        private readonly IItemService _itemService;
+
+        public ItemsController(IItemService itemService)
+        {
+            _itemService = itemService ?? throw new System.ArgumentNullException(nameof(itemService));
+        }
+
         [HttpGet]
         public IActionResult GetAll()
         {
-            return Ok(new ItemService().GetAll(1));
+            return Ok(_itemService.GetAll().Select(item => new ItemApiModel { Id = item.Id, Text = item.Text }));
         }
 
         [HttpGet("{id}")]
         public IActionResult Get(int id)
         {
-            return Ok(new ItemService().Get(id));
+            ItemDTO existingItem = _itemService.Get(id);
+
+            return Ok(new ItemApiModel { Id = existingItem.Id, Text = existingItem.Text });
         }
 
+        [HttpGet("filterBy")]
         public IActionResult GetByFilters([FromQuery]Dictionary<string, string> filters)
         {
-            return Ok(new ItemService().Get(1));
+            var filterDto = new ItemByFilterDTO(filters);
+
+            return Ok(_itemService.GetAllByFilter(filterDto).Select(item => new ItemApiModel { Id = item.Id, Text = item.Text }));
         }
 
         [HttpPost]
@@ -32,7 +46,7 @@ namespace ASPNetCoreMastersTodoList.Api.Controllers
         {
             if (ModelState.IsValid)
             {
-                new ItemService().Save(new ItemDTO
+                _itemService.AddItem(new ItemDTO
                 {
                     Text = itemCreateBindingModel.Text
                 });
@@ -46,8 +60,9 @@ namespace ASPNetCoreMastersTodoList.Api.Controllers
         {
             if (ModelState.IsValid)
             {
-                new ItemService().Save(new ItemDTO
+                _itemService.Update(new ItemDTO
                 {
+                    Id = id,
                     Text = itemUpdateBindingModel.Text
                 });
             }
@@ -57,7 +72,8 @@ namespace ASPNetCoreMastersTodoList.Api.Controllers
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)
         {
-            return Ok(new ItemService().Get(id));
+            _itemService.Delete(id);
+            return Ok();
         }
     }
 }

@@ -2,6 +2,8 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Repositories;
+using Services;
 
 namespace ASPNetCoreMastersTodoList.Api
 {
@@ -12,6 +14,10 @@ namespace ASPNetCoreMastersTodoList.Api
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
+
+            services.AddSingleton<DataContext>();
+            services.AddScoped<IItemRepository, ItemRepository>();
+            services.AddScoped<IItemService, ItemService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -30,7 +36,6 @@ namespace ASPNetCoreMastersTodoList.Api
 
             app.UseEndpoints(endpoints =>
             {
-                //endpoints.MapControllerRoute(name: "default", pattern: "{controller}/{action}/{id?}");
                 endpoints.MapControllers();
             });
         }
