@@ -1,8 +1,10 @@
-﻿using ASPNetCoreMastersTodoList.Api.BindingModels;
+﻿using ASPNetCoreMastersTodoList.Api.ApiModels;
+using ASPNetCoreMastersTodoList.Api.BindingModels;
 using Microsoft.AspNetCore.Mvc;
 using Services;
 using Services.DTO;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace ASPNetCoreMastersTodoList.Api.Controllers
 {
@@ -18,28 +20,25 @@ namespace ASPNetCoreMastersTodoList.Api.Controllers
         }
 
         [HttpGet]
-        public IActionResult GetAll([FromQuery] Dictionary<string, string> filters)
+        public IActionResult GetAll()
         {
-            if (!(filters is null)) // change to filters is not null when upgraded to c# 9 or greater
-            {
-                return GetByFilters(filters);
-            }
-
-            return Ok(_itemService.GetAll());
+            return Ok(_itemService.GetAll().Select(item => new ItemApiModel { Id = item.Id, Text = item.Text }));
         }
 
         [HttpGet("{id}")]
         public IActionResult Get(int id)
         {
+            ItemDTO existingItem = _itemService.Get(id);
 
-            return Ok(_itemService.Get(id));
+            return Ok(new ItemApiModel { Id = existingItem.Id, Text = existingItem.Text });
         }
 
+        [HttpGet("filterBy")]
         public IActionResult GetByFilters([FromQuery]Dictionary<string, string> filters)
         {
             var filterDto = new ItemByFilterDTO(filters);
 
-            return Ok(_itemService.GetAllByFilter(filterDto));
+            return Ok(_itemService.GetAllByFilter(filterDto).Select(item => new ItemApiModel { Id = item.Id, Text = item.Text }));
         }
 
         [HttpPost]
@@ -63,6 +62,7 @@ namespace ASPNetCoreMastersTodoList.Api.Controllers
             {
                 _itemService.Update(new ItemDTO
                 {
+                    Id = id,
                     Text = itemUpdateBindingModel.Text
                 });
             }

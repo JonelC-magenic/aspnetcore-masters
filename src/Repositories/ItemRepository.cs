@@ -20,8 +20,38 @@ namespace Repositories
             return _dataContext.Items.AsQueryable();
         }
 
-        public void Save() { }
+        public void Save(Item item) {
+            if (item.Id == default)
+            {
+                Item lastItem = _dataContext.Items.LastOrDefault();
 
-        public void Delete() { }
+                // Change this when we add the Key attribute to the item so that it autoincrements
+                if (lastItem is null)
+                    item.Id = 1;
+                else
+                    item.Id = lastItem.Id + 1;
+
+                _dataContext.Items.Add(item);
+            }
+            else
+            {
+                Item itemToUpdate = _dataContext.Items.Find(existingItem => existingItem.Id == item.Id);
+
+                if (itemToUpdate is null)
+                    throw new Exception($"Item with id {item.Id} was not found.");
+
+                itemToUpdate.Text = item.Text;
+            }
+        }
+
+        public void Delete(int id)
+        {
+            Item itemToDelete = _dataContext.Items.Find(existingItem => existingItem.Id == id);
+
+            if (itemToDelete is null)
+                throw new Exception($"Item with id {id} was not found.");
+
+            _dataContext.Items.Remove(itemToDelete);
+        }
     }
 }

@@ -4,6 +4,8 @@ namespace ASPNetCoreMastersTodoList.Api.BindingModels
 {
     public class ItemUpdateBindingModel
     {
+        public int Id { get; set; }
+
         [Required]
         [StringLength(128, MinimumLength = 1)]
         public string Text { get; set; }

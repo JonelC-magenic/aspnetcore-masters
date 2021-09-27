@@ -6,7 +6,7 @@ namespace Repositories
     public interface IItemRepository
     {
         IQueryable<Item> All();
-        void Delete();
-        void Save();
+        void Delete(int id);
+        void Save(Item item);
     }
 }
