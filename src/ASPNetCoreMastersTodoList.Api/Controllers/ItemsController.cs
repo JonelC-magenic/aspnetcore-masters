@@ -1,5 +1,6 @@
 ﻿using ASPNetCoreMastersTodoList.Api.ApiModels;
 using ASPNetCoreMastersTodoList.Api.BindingModels;
+using ASPNetCoreMastersTodoList.Api.Filters;
 using Microsoft.AspNetCore.Mvc;
 using Services;
 using Services.DTO;
@@ -25,7 +26,7 @@ namespace ASPNetCoreMastersTodoList.Api.Controllers
             return Ok(_itemService.GetAll().Select(item => new ItemApiModel { Id = item.Id, Text = item.Text }));
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("{id}"), EnsureItemExistsAttribute]
         public IActionResult Get(int id)
         {
             ItemDTO existingItem = _itemService.Get(id);
@@ -55,7 +56,7 @@ namespace ASPNetCoreMastersTodoList.Api.Controllers
             return Ok();
         }
 
-        [HttpPut("{id}")]
+        [HttpPut("{id}"), EnsureItemExistsAttribute]
         public IActionResult Put(int id, [FromBody]ItemUpdateBindingModel itemUpdateBindingModel)
         {
             if (ModelState.IsValid)
@@ -69,7 +70,7 @@ namespace ASPNetCoreMastersTodoList.Api.Controllers
             return Ok();
         }
 
-        [HttpDelete("{id}")]
+        [HttpDelete("{id}"), EnsureItemExistsAttribute]
         public IActionResult Delete(int id)
         {
             _itemService.Delete(id);

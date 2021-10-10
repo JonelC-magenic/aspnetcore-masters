@@ -1,8 +1,6 @@
 ﻿using DomainModels;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace Repositories
 {
@@ -37,9 +35,6 @@ namespace Repositories
             {
                 Item itemToUpdate = _dataContext.Items.Find(existingItem => existingItem.Id == item.Id);
 
-                if (itemToUpdate is null)
-                    throw new Exception($"Item with id {item.Id} was not found.");
-
                 itemToUpdate.Text = item.Text;
             }
         }
@@ -47,9 +42,6 @@ namespace Repositories
         public void Delete(int id)
         {
             Item itemToDelete = _dataContext.Items.Find(existingItem => existingItem.Id == id);
-
-            if (itemToDelete is null)
-                throw new Exception($"Item with id {id} was not found.");
 
             _dataContext.Items.Remove(itemToDelete);
         }
