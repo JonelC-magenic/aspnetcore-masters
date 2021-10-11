@@ -24,7 +24,7 @@ namespace ASPNetCoreMastersTodoList.Api
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers(options => {
-                options.Filters.Add(new PerformanceAttribute());
+                options.Filters.Add(new PerformanceFilter());
             });
 
             services.AddSingleton<DataContext>();

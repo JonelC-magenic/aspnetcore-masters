@@ -10,11 +10,11 @@ namespace ASPNetCoreMastersTodoList.Api.Filters
 {
     public class EnsureItemExistsFilter : IActionFilter
     {
-        public readonly IItemService itemService;
+        private readonly IItemService _itemService;
 
         public EnsureItemExistsFilter(IItemService itemService)
         {
-            this.itemService = itemService ?? throw new ArgumentNullException(nameof(itemService));
+            this._itemService = itemService ?? throw new ArgumentNullException(nameof(itemService));
         }
 
         public void OnActionExecuted(ActionExecutedContext context)
@@ -23,11 +23,12 @@ namespace ASPNetCoreMastersTodoList.Api.Filters
 
         public void OnActionExecuting(ActionExecutingContext context)
         {
-            var itemId = (int)context.ActionArguments["id"];
+            bool hasId = context.ActionArguments.TryGetValue("id", out object itemIdObj);
 
-            if (!itemService.ItemExists(itemId))
+            if (hasId)
             {
-                context.Result = new NotFoundResult();
+                if (!_itemService.ItemExists((int)itemIdObj))
+                    context.Result = new NotFoundResult();
             }
         }
     }

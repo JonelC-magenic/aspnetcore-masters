@@ -10,7 +10,7 @@ using System.Linq;
 namespace ASPNetCoreMastersTodoList.Api.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("[controller]"), EnsureItemExistsAttribute]
     public class ItemsController : ControllerBase
     {
         private readonly IItemService _itemService;
@@ -56,7 +56,7 @@ namespace ASPNetCoreMastersTodoList.Api.Controllers
             return Ok();
         }
 
-        [HttpPut("{id}"), EnsureItemExistsAttribute]
+        [HttpPut("{id}")]
         public IActionResult Put(int id, [FromBody]ItemUpdateBindingModel itemUpdateBindingModel)
         {
             if (ModelState.IsValid)
