@@ -10,7 +10,7 @@ using System.Linq;
 namespace ASPNetCoreMastersTodoList.Api.Controllers
 {
     [ApiController]
-    [Route("[controller]"), EnsureItemExistsAttribute]
+    [Route("[controller]"), EnsureItemExists]
     public class ItemsController : ControllerBase
     {
         private readonly IItemService _itemService;
@@ -26,7 +26,7 @@ namespace ASPNetCoreMastersTodoList.Api.Controllers
             return Ok(_itemService.GetAll().Select(item => new ItemApiModel { Id = item.Id, Text = item.Text }));
         }
 
-        [HttpGet("{id}"), EnsureItemExistsAttribute]
+        [HttpGet("{id}")]
         public IActionResult Get(int id)
         {
             ItemDTO existingItem = _itemService.Get(id);
@@ -70,7 +70,7 @@ namespace ASPNetCoreMastersTodoList.Api.Controllers
             return Ok();
         }
 
-        [HttpDelete("{id}"), EnsureItemExistsAttribute]
+        [HttpDelete("{id}")]
         public IActionResult Delete(int id)
         {
             _itemService.Delete(id);
