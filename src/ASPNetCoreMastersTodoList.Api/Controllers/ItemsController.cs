@@ -1,5 +1,6 @@
 ﻿using ASPNetCoreMastersTodoList.Api.ApiModels;
 using ASPNetCoreMastersTodoList.Api.BindingModels;
+using ASPNetCoreMastersTodoList.Api.Filters;
 using Microsoft.AspNetCore.Mvc;
 using Services;
 using Services.DTO;
@@ -9,7 +10,7 @@ using System.Linq;
 namespace ASPNetCoreMastersTodoList.Api.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("[controller]"), EnsureItemExists]
     public class ItemsController : ControllerBase
     {
         private readonly IItemService _itemService;

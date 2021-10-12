@@ -20,15 +20,17 @@ namespace Services
         {
             Item existingItem = _itemRepository.All().FirstOrDefault(item => item.Id == id);
 
-            if (existingItem is null)
-                throw new Exception($"Item with id {id} was not found.");
-
             return new ItemDTO { Id = existingItem.Id, Text = existingItem.Text };
         }
 
         public IEnumerable<ItemDTO> GetAll()
         {
             return _itemRepository.All().Select(item => new ItemDTO { Id = item.Id, Text = item.Text });
+        }
+
+        public bool ItemExists(int id)
+        {
+            return _itemRepository.All().Any(item => item.Id == id);
         }
 
         public IEnumerable<ItemDTO> GetAllByFilter(ItemByFilterDTO filters)
