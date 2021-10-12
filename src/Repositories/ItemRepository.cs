@@ -6,9 +6,9 @@ namespace Repositories
 {
     public class ItemRepository : IItemRepository
     {
-        private readonly DataContext _dataContext;
+        private readonly ItemDbContext _dataContext;
 
-        public ItemRepository(DataContext dataContext)
+        public ItemRepository(ItemDbContext dataContext)
         {
             _dataContext = dataContext ?? throw new ArgumentNullException(nameof(dataContext));
         }
@@ -18,32 +18,27 @@ namespace Repositories
             return _dataContext.Items.AsQueryable();
         }
 
-        public void Save(Item item) {
+        public void Save(Item item)
+        {
             if (item.Id == default)
             {
-                Item lastItem = _dataContext.Items.LastOrDefault();
-
-                // Change this when we add the Key attribute to the item so that it autoincrements
-                if (lastItem is null)
-                    item.Id = 1;
-                else
-                    item.Id = lastItem.Id + 1;
-
                 _dataContext.Items.Add(item);
             }
             else
             {
-                Item itemToUpdate = _dataContext.Items.Find(existingItem => existingItem.Id == item.Id);
-
-                itemToUpdate.Text = item.Text;
+                _dataContext.Items.Update(item);
             }
+
+            _dataContext.SaveChanges();
         }
 
         public void Delete(int id)
         {
-            Item itemToDelete = _dataContext.Items.Find(existingItem => existingItem.Id == id);
+            Item itemToDelete = _dataContext.Items.Find(id);
 
             _dataContext.Items.Remove(itemToDelete);
+
+            _dataContext.SaveChanges();
         }
     }
 }

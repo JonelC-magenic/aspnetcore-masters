@@ -1,6 +1,7 @@
 ﻿using ASPNetCoreMastersTodoList.Api.ApiModels;
 using ASPNetCoreMastersTodoList.Api.BindingModels;
 using ASPNetCoreMastersTodoList.Api.Filters;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Services;
 using Services.DTO;
@@ -9,6 +10,7 @@ using System.Linq;
 
 namespace ASPNetCoreMastersTodoList.Api.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("[controller]"), EnsureItemExists]
     public class ItemsController : ControllerBase
