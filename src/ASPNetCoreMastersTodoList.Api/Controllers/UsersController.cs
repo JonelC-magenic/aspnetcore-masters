@@ -22,10 +22,10 @@ namespace ASPNetCoreMastersTodoList.Api.Controllers
     [Route("[controller]")]
     public class UsersController : ControllerBase
     {
-        private readonly UserManager<IdentityUser> _userManager;
+        private readonly UserManager<ApplicationUser> _userManager;
         private readonly JwtOptions _jwtOptions;
 
-        public UsersController(UserManager<IdentityUser> userManager, IOptions<JwtOptions> jwtOptions)
+        public UsersController(UserManager<ApplicationUser> userManager, IOptions<JwtOptions> jwtOptions)
         {
             _userManager = userManager ?? throw new System.ArgumentNullException(nameof(userManager));
             _jwtOptions = jwtOptions.Value;
@@ -34,7 +34,7 @@ namespace ASPNetCoreMastersTodoList.Api.Controllers
         [HttpPost("[action]")]
         public async Task<IActionResult> Register(RegisterBindingModel model)
         {
-            var user = new IdentityUser
+            var user = new ApplicationUser
             {
                 Email = model.Email,
                 UserName = model.Email

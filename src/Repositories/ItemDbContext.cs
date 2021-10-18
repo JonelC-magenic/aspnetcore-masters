@@ -7,7 +7,7 @@ using System.Text;
 
 namespace Repositories
 {
-    public class ItemDbContext : IdentityDbContext
+    public class ItemDbContext : IdentityDbContext<ApplicationUser>
     {
         public ItemDbContext(DbContextOptions options) : base(options)
         {

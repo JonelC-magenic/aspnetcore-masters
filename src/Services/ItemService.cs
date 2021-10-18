@@ -1,4 +1,5 @@
 ﻿using DomainModels;
+using Microsoft.EntityFrameworkCore;
 using Repositories;
 using Services.DTO;
 using System;
@@ -20,12 +21,12 @@ namespace Services
         {
             Item existingItem = _itemRepository.All().FirstOrDefault(item => item.Id == id);
 
-            return new ItemDTO { Id = existingItem.Id, Text = existingItem.Text };
+            return new ItemDTO { Id = existingItem.Id, Text = existingItem.Text, CreatedBy = existingItem.CreatedBy, DateCreated = existingItem.DateCreated };
         }
 
         public IEnumerable<ItemDTO> GetAll()
         {
-            return _itemRepository.All().Select(item => new ItemDTO { Id = item.Id, Text = item.Text });
+            return _itemRepository.All().Select(item => new ItemDTO { Id = item.Id, Text = item.Text, CreatedBy = item.CreatedBy, DateCreated = item.DateCreated });
         }
 
         public bool ItemExists(int id)
@@ -58,13 +59,20 @@ namespace Services
             return itemsToReturn.Distinct().Select(item => new ItemDTO { Id = item.Id, Text = item.Text });
         }
 
+        public ItemViewModel GetItemDetail(int id)
+        {
+            Item existingItem = _itemRepository.All().AsNoTracking().FirstOrDefault(item => item.Id == id);
+
+            return new ItemViewModel { Id = existingItem.Id, Text = existingItem.Text, CreatedBy = existingItem.CreatedBy, DateCreated = existingItem.DateCreated };
+        }
+
         public void AddItem(ItemDTO itemDto)
         {
-            _itemRepository.Save(new Item { Text = itemDto.Text });
+            _itemRepository.Save(new Item { Text = itemDto.Text, CreatedBy = itemDto.CreatedBy, DateCreated = itemDto.DateCreated });
         }
         public void Update(ItemDTO itemDto)
         {
-            _itemRepository.Save(new Item { Id = itemDto.Id, Text = itemDto.Text });
+            _itemRepository.Save(new Item { Id = itemDto.Id, Text = itemDto.Text, CreatedBy = itemDto.CreatedBy, DateCreated = itemDto.DateCreated });
         }
         public void Delete(int id)
         {
