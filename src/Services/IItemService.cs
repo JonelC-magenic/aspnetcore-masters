@@ -1,4 +1,5 @@
-﻿using Services.DTO;
+﻿using DomainModels;
+using Services.DTO;
 using System.Collections.Generic;
 
 namespace Services
@@ -8,6 +9,7 @@ namespace Services
         void AddItem(ItemDTO itemDto);
         void Delete(int id);
         ItemDTO Get(int id);
+        ItemViewModel GetItemDetail(int id);
         bool ItemExists(int id);
         IEnumerable<ItemDTO> GetAll();
         IEnumerable<ItemDTO> GetAllByFilter(ItemByFilterDTO filters);

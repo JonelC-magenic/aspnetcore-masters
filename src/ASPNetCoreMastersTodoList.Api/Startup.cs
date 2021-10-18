@@ -1,6 +1,8 @@
+using ASPNetCoreMastersTodoList.Api.Authorization;
 using ASPNetCoreMastersTodoList.Api.Filters;
 using DomainModels;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
@@ -32,7 +34,7 @@ namespace ASPNetCoreMastersTodoList.Api
                 o.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"));
             });
 
-            services.AddIdentity<IdentityUser, IdentityRole>()
+            services.AddIdentity<ApplicationUser, IdentityRole>()
                 .AddEntityFrameworkStores<ItemDbContext>()
                 .AddDefaultTokenProviders();
 
@@ -55,11 +57,20 @@ namespace ASPNetCoreMastersTodoList.Api
                     };
                 });
 
+            services.AddAuthorization(o =>
+            {
+                o.AddPolicy("OnlyCreatorCanEditItem",
+                    policyBuilder => policyBuilder.AddRequirements(
+                        new IsItemCreatorRequirement()
+                        ));
+            });
+
+            services.AddScoped<IAuthorizationHandler, IsItemCreatorHandler>();
+
             services.AddControllers(options => {
                 options.Filters.Add(new PerformanceFilter());
             });
 
-            services.AddSingleton<DataContext>();
             services.AddScoped<IItemRepository, ItemRepository>();
             services.AddScoped<IItemService, ItemService>();
 

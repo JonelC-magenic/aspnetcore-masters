@@ -1,8 +1,9 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
 
-namespace Services.DTO
+namespace DomainModels
 {
-    public class ItemDTO
+    public class ItemViewModel
     {
         public int Id { get; set; }
         public string Text { get; set; }
