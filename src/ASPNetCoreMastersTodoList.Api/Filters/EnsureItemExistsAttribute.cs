@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.Extensions.Logging;
 using Services;
 using System;
 using System.Collections.Generic;
@@ -11,10 +12,12 @@ namespace ASPNetCoreMastersTodoList.Api.Filters
     public class EnsureItemExistsFilter : IActionFilter
     {
         private readonly IItemService _itemService;
+        private readonly ILogger _logger;
 
-        public EnsureItemExistsFilter(IItemService itemService)
+        public EnsureItemExistsFilter(IItemService itemService, ILogger<EnsureItemExistsFilter> logger)
         {
             this._itemService = itemService ?? throw new ArgumentNullException(nameof(itemService));
+            _logger = logger;
         }
 
         public void OnActionExecuted(ActionExecutedContext context)
@@ -25,10 +28,10 @@ namespace ASPNetCoreMastersTodoList.Api.Filters
         {
             bool hasId = context.ActionArguments.TryGetValue("id", out object itemIdObj);
 
-            if (hasId)
+            if (hasId && !_itemService.ItemExists((int)itemIdObj))
             {
-                if (!_itemService.ItemExists((int)itemIdObj))
-                    context.Result = new NotFoundResult();
+                _logger.LogError("Could not find item with id : {ItemId}", itemIdObj);
+                context.Result = new NotFoundResult();
             }
         }
     }
