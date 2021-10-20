@@ -5,6 +5,7 @@ using DomainModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Services;
 using Services.DTO;
 using System;
@@ -23,26 +24,37 @@ namespace ASPNetCoreMastersTodoList.Api.Controllers
         private readonly IItemService _itemService;
         private readonly IAuthorizationService _authService;
         private readonly UserManager<ApplicationUser> _userService;
+        private readonly ILogger _logger;
 
         public ItemsController(
             IItemService itemService,
             IAuthorizationService authService,
-            UserManager<ApplicationUser> userService)
+            UserManager<ApplicationUser> userService, 
+            ILogger<ItemsController> logger)
         {
             _itemService = itemService;
             _authService = authService;
             _userService = userService;
+            _logger = logger;
         }
 
         [HttpGet]
         public IActionResult GetAll()
         {
-            return Ok(_itemService.GetAll().Select(item => new ItemApiModel { Id = item.Id, Text = item.Text, CreatedBy = item.CreatedBy, DateCreated = item.DateCreated }));
+            IEnumerable<ItemApiModel> items = _itemService
+                .GetAll()
+                .Select(item => new ItemApiModel { Id = item.Id, Text = item.Text, CreatedBy = item.CreatedBy, DateCreated = item.DateCreated });
+
+            _logger.LogInformation("Loaded {ItemCount} items", items.Count());
+
+            return Ok(items);
         }
 
         [HttpGet("{id}")]
         public IActionResult Get(int id)
         {
+            _logger.LogInformation("Loading item with id {ItemId}", id);
+
             ItemDTO existingItem = _itemService.Get(id);
 
             return Ok(new ItemApiModel { Id = existingItem.Id, Text = existingItem.Text, CreatedBy = existingItem.CreatedBy, DateCreated = existingItem.DateCreated });
@@ -69,6 +81,8 @@ namespace ASPNetCoreMastersTodoList.Api.Controllers
                     CreatedBy = Guid.Parse(user.Id),
                     DateCreated = DateTime.UtcNow
                 });
+
+                _logger.LogInformation("Item has been created");
             }
 
             return Ok();
@@ -91,6 +105,8 @@ namespace ASPNetCoreMastersTodoList.Api.Controllers
                     CreatedBy = item.CreatedBy,
                     DateCreated = item.DateCreated
                 });
+
+                _logger.LogInformation("Successfully updated item with id : {ItemId}", id);
             }
             return Ok();
         }
@@ -99,6 +115,9 @@ namespace ASPNetCoreMastersTodoList.Api.Controllers
         public IActionResult Delete(int id)
         {
             _itemService.Delete(id);
+
+            _logger.LogInformation("Successfully deleted item with id : {ItemId}", id);
+
             return Ok();
         }
     }
