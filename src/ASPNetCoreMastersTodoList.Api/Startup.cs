@@ -1,5 +1,7 @@
 using ASPNetCoreMastersTodoList.Api.Authorization;
 using ASPNetCoreMastersTodoList.Api.Filters;
+using Autofac;
+using Autofac.Extensions.DependencyInjection;
 using DomainModels;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -13,6 +15,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using Repositories;
 using Services;
+using System;
 using System.Text;
 
 namespace ASPNetCoreMastersTodoList.Api
@@ -30,7 +33,9 @@ namespace ASPNetCoreMastersTodoList.Api
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<ItemDbContext>(o => {
+            // Add framework services.
+            services.AddDbContext<ItemDbContext>(o =>
+            {
                 o.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"));
             });
 
@@ -40,6 +45,7 @@ namespace ASPNetCoreMastersTodoList.Api
 
             SecurityKey securityKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(Configuration["Authentication:JWT:SecurityKey"]));
             services.Configure<JwtOptions>(o => o.SecurityKey = securityKey);
+            services.Configure<Authentication>(Configuration.GetSection("Authentication"));
 
             services.AddAuthentication(o =>
             {
@@ -64,17 +70,11 @@ namespace ASPNetCoreMastersTodoList.Api
                         new IsItemCreatorRequirement()
                         ));
             });
-
-            services.AddScoped<IAuthorizationHandler, IsItemCreatorHandler>();
-
-            services.AddControllers(options => {
+            services.AddAutofac();
+            services.AddControllers(options =>
+            {
                 options.Filters.Add(new PerformanceFilter());
             });
-
-            services.AddScoped<IItemRepository, ItemRepository>();
-            services.AddScoped<IItemService, ItemService>();
-
-            services.Configure<Authentication>(Configuration.GetSection("Authentication"));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -99,6 +99,13 @@ namespace ASPNetCoreMastersTodoList.Api
             {
                 endpoints.MapControllers();
             });
+        }
+
+        public void ConfigureContainer(ContainerBuilder containerBuilder)
+        {
+            containerBuilder.RegisterType<IsItemCreatorHandler>().As<IAuthorizationHandler>();
+            containerBuilder.RegisterType<ItemRepository>().As<IItemRepository>();
+            containerBuilder.RegisterType<ItemService>().As<IItemService>();
         }
     }
 }
