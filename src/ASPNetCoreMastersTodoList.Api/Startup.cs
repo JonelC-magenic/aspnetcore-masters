@@ -28,6 +28,7 @@ namespace ASPNetCoreMastersTodoList.Api
         }
 
         IConfiguration Configuration { get; }
+        readonly string AllowSpecificOrigins = "_allowSpecificOrigins";
 
         // This method gets called by the runtime. Use this method to add services to the container.
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
@@ -70,6 +71,16 @@ namespace ASPNetCoreMastersTodoList.Api
                         new IsItemCreatorRequirement()
                         ));
             });
+            
+            services.AddCors(options =>
+            {
+                options.AddDefaultPolicy(
+                    builder =>
+                    {
+                        builder.WithOrigins("http://example.com");
+                    });
+            });
+
             services.AddAutofac();
             services.AddControllers(options =>
             {
@@ -90,6 +101,8 @@ namespace ASPNetCoreMastersTodoList.Api
             }
 
             app.UseRouting();
+
+            app.UseCors();
 
             app.UseAuthentication();
 
