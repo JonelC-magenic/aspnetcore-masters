@@ -1,5 +1,6 @@
 using ASPNetCoreMastersTodoList.Api.Authorization;
 using ASPNetCoreMastersTodoList.Api.Filters;
+using ASPNetCoreMastersTodoList.Api.Middleware;
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
 using DomainModels;
@@ -99,6 +100,10 @@ namespace ASPNetCoreMastersTodoList.Api
             {
                 app.UseExceptionHandler("/error");
             }
+
+            app.UseLogMiddleware();
+
+            app.UseFormatResponseMiddleware();
 
             app.UseRouting();
 

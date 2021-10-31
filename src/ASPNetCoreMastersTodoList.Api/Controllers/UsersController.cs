@@ -64,7 +64,7 @@ namespace ASPNetCoreMastersTodoList.Api.Controllers
             var user = await _userManager.FindByEmailAsync(confirm.Email);
             var code = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(confirm.Code));
 
-            if (user == null || user.EmailConfirmed)
+            if (user == null || !user.EmailConfirmed)
             {
                 return BadRequest();
             }

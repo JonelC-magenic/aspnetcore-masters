@@ -50,7 +50,7 @@ namespace ASPNetCoreMastersTodoList.Api.Controllers
             return Ok(items);
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("{id}"), RequestIdValidationAttribute]
         public IActionResult Get(int id)
         {
             _logger.LogInformation("Loading item with id {ItemId}", id);
@@ -60,7 +60,7 @@ namespace ASPNetCoreMastersTodoList.Api.Controllers
             return Ok(new ItemApiModel { Id = existingItem.Id, Text = existingItem.Text, CreatedBy = existingItem.CreatedBy, DateCreated = existingItem.DateCreated });
         }
 
-        [HttpGet("filterBy")]
+        [HttpGet("filterBy"), RequestIdValidationAttribute]
         public IActionResult GetByFilters([FromQuery]Dictionary<string, string> filters)
         {
             var filterDto = new ItemByFilterDTO(filters);
@@ -88,7 +88,7 @@ namespace ASPNetCoreMastersTodoList.Api.Controllers
             return Ok();
         }
 
-        [HttpPut("{id}")]
+        [HttpPut("{id}"), RequestIdValidationAttribute]
         public async Task<IActionResult> Put(int id, [FromBody]ItemUpdateBindingModel itemUpdateBindingModel)
         {
             if (ModelState.IsValid)
@@ -111,7 +111,7 @@ namespace ASPNetCoreMastersTodoList.Api.Controllers
             return Ok();
         }
 
-        [HttpDelete("{id}")]
+        [HttpDelete("{id}"), RequestIdValidationAttribute]
         public IActionResult Delete(int id)
         {
             _itemService.Delete(id);
