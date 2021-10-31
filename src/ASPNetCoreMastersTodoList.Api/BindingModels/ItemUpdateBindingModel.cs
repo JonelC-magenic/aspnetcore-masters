@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using ASPNetCoreMastersTodoList.Api.CustomAttribute;
+using System.ComponentModel.DataAnnotations;
 
 namespace ASPNetCoreMastersTodoList.Api.BindingModels
 {
@@ -6,6 +7,7 @@ namespace ASPNetCoreMastersTodoList.Api.BindingModels
     {
         [Required]
         [StringLength(128, MinimumLength = 1)]
+        [CheckNumberWordsAttribute(3)]
         public string Text { get; set; }
     }
 }

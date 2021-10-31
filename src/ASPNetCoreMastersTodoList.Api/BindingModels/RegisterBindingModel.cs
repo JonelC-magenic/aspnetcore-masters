@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using ASPNetCoreMastersTodoList.Api.CustomAttribute;
+using System.ComponentModel.DataAnnotations;
 
 namespace ASPNetCoreMastersTodoList.Api.BindingModels
 {
@@ -9,6 +10,7 @@ namespace ASPNetCoreMastersTodoList.Api.BindingModels
         public string Email { get; set; }
 
         [Required]
+        [PasswordStrength(PasswordScore.VeryStrong)]
         public string Password { get; set; }
 
         [Required]
